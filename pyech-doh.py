@@ -10,7 +10,7 @@ import json
 
 import requests
 
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Any, Dict, List
 
 
 import dns.message
@@ -552,7 +552,7 @@ class MyHandler(BaseHTTPRequestHandler):
         #print(parse_dns_wire(upstream_resp.content))
         
         
-UPSTREAM='https://name.yosakura.xyz/google/query-dns'
+UPSTREAM='https://wikimedia-dns.org/dns-query'
 r2d=message_to_dict
 d2r=dict_to_message
 
