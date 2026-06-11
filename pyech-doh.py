@@ -10,7 +10,7 @@ import json
 
 import requests
 
-from typing import Optional, Tuple, Any, Dict, List
+from typing import Optional, Tuple, Any, Dict, List, Union
 
 
 import dns.message
