@@ -512,11 +512,33 @@ class MyHandler(BaseHTTPRequestHandler):
         path_l = self.path.split('/')
         path_l = [i for i in path_l if i != '']
         print(path_l)
+        if 'dns=' not in path_l[-1]:
+        #    pass
         # 【修正 11】正确返回 200
-        self.send_response(200)
-        self.send_header('Content-Type', 'text/plain')
-        self.end_headers()
-        self.wfile.write(b'ok')
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b'ok')
+        else:
+#            pass
+            print('Sen GET')
+            get_str=path_l[-1].split('dns=')[-1]
+            npdbase64=get_str.replace('-','+').replace('_','/')
+            strbase64=npdbase64+ '=' *(-len(npdbase64) % 4)
+            post_body=binascii.a2b_base64(strbase64)
+            print(r2d(post_body))
+            try:
+                upstream_resp=send2upsteram(post_body,UPSTREAM)
+            except requests.RequestException as e:
+                print(f"Upstream error: {e}")
+                self.send_error(502, 'Bad Gateway')
+                return
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/dns-message')
+            self.end_headers()
+            print('Res')
+            qd = name_handler(upstream_resp.content, name_dict, cdn_dict)
+            self.wfile.write(qd)
 
     def do_POST(self):
         if 'query' not in self.path:
@@ -532,6 +554,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
         query_data = self.rfile.read(content_length)
         print('Sen')
+
         print(r2d(query_data))
 
         try:
